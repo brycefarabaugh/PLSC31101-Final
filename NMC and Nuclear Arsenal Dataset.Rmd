@@ -1,0 +1,286 @@
+---
+title: "NMC and Nuclear Arsenal Dataset"
+author: "Bryce Farabaugh"
+date: "12/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(tibble)
+library(ggplot2)
+```
+
+
+```{r}
+NW <- read.csv("~/number-of-nuclear-warheads-in-the-inventory-of-the-nuclear-powers.csv")
+#read in data about nuclear weapons arsenals
+
+NWT <- read.csv("~/number-of-nuclear-weapons-tests-for-selected-nuclear-powers-1945-1998.csv")
+#read in data about nuclear weapons tests
+
+NMC <- read.csv("~/NMC_5_0.csv")
+#read in the Correlates of War National Material Capabilities data
+```
+
+```{r}
+NW$Code[NW$Code == "FRA"] <- "FRN" 
+#change France code to match NMC
+NW$Code[NW$Code == "GBR"] <- "UKG" 
+#change Britain code to match NMC
+
+NW <- rename(NW, year = Year, arsenal = Nuclear.weapons.inventory.by.country..FAS.Nuclear.Notebook., country = Entity) #change variable titles to make merging dataframes easier
+  
+```
+
+```{r}
+NWT$Code[NWT$Code == "FRA"] <- "FRN" 
+#change France code to match NMC
+NWT$Code[NWT$Code == "GBR"] <- "UKG" 
+#change Britain code to match NMC
+
+NWT <- rename(NWT, year = Year, tests = Nuclear.weapons.test..Oklahoma.Geological.Survey.Observatory.) #change variable titles to make merging dataframes easier
+
+NWT <- NWT %>% 
+  mutate("Entity" = NULL)
+#remove "Entity" variable as it already exists in NW dataframe
+```
+
+```{r}
+#Add post-2014 data for China
+NW <- add_row(NW, country = "China", Code = "CHN", year = 2015, arsenal = 260, .after = 70)
+
+NW <- add_row(NW, country = "China", Code = "CHN", year = 2016, arsenal = 260, .after = 71)
+
+NW <- add_row(NW, country = "China", Code = "CHN", year = 2017, arsenal = NA, .after = 72)
+
+NW <- add_row(NW, country = "China", Code = "CHN", year = 2018, arsenal = 280, .after = 73)
+
+NW <- add_row(NW, country = "China", Code = "CHN", year = 2019, arsenal = 290, .after = 74)
+
+NW <- add_row(NW, country = "China", Code = "CHN", year = 2020, arsenal = 350, .after = 75)
+
+```
+
+```{r}
+#Add post-2014 data for France
+NW <- add_row(NW, country = "France", Code = "FRN", year = 2015, arsenal = NA, .after = 146)
+
+NW <- add_row(NW, country = "France", Code = "FRN", year = 2016, arsenal = NA, .after =147)
+
+NW <- add_row(NW, country = "France", Code = "FRN", year = 2017, arsenal = NA, .after = 148)
+
+NW <- add_row(NW, country = "France", Code = "FRN", year = 2018, arsenal = NA, .after = 149)
+
+NW <- add_row(NW, country = "France", Code = "FRN", year = 2019, arsenal = 300, .after = 150)
+
+NW <- add_row(NW, country = "France", Code = "FRN", year = 2020, arsenal = 290, .after = 151)
+```
+
+```{r}
+#Add post-2014 data for India
+NW <- add_row(NW, country = "India", Code = "IND", year = 2015, arsenal = 115, .after = 222)
+
+NW <- add_row(NW, country = "India", Code = "IND", year = 2016, arsenal = NA, .after =223)
+
+NW <- add_row(NW, country = "India", Code = "IND", year = 2017, arsenal = 125, .after = 224)
+
+NW <- add_row(NW, country = "India", Code = "IND", year = 2018, arsenal = 135, .after = 225)
+
+NW <- add_row(NW, country = "India", Code = "IND", year = 2019, arsenal = NA, .after = 226)
+
+NW <- add_row(NW, country = "India", Code = "IND", year = 2020, arsenal = 150, .after = 227)
+
+```
+
+```{r}
+#Add post-2014 data for Israel
+NW <- add_row(NW, country = "Israel", Code = "ISR", year = 2015, arsenal = NA, .after = 298)
+
+NW <- add_row(NW, country = "Israel", Code = "ISR", year = 2016, arsenal = NA, .after =299)
+
+NW <- add_row(NW, country = "Israel", Code = "ISR", year = 2017, arsenal = NA, .after = 300)
+
+NW <- add_row(NW, country = "Israel", Code = "ISR", year = 2018, arsenal = NA, .after = 301)
+
+NW <- add_row(NW, country = "Israel", Code = "ISR", year = 2019, arsenal = NA, .after = 302)
+
+NW <- add_row(NW, country = "Israel", Code = "ISR", year = 2020, arsenal = 90, .after = 303)
+```
+
+
+```{r}
+#Add post-2014 data for Pakistan
+NW <- add_row(NW, country = "Pakistan", Code = "PAK", year = 2015, arsenal = 120, .after = 374)
+
+NW <- add_row(NW, country = "Pakistan", Code = "PAK", year = 2016, arsenal = 135, .after =375)
+
+NW <- add_row(NW, country = "Pakistan", Code = "PAK", year = 2017, arsenal = NA, .after = 376)
+
+NW <- add_row(NW, country = "Pakistan", Code = "PAK", year = 2018, arsenal = 145, .after = 377)
+
+NW <- add_row(NW, country = "Pakistan", Code = "PAK", year = 2019, arsenal = NA, .after = 378)
+
+NW <- add_row(NW, country = "Pakistan", Code = "PAK", year = 2020, arsenal = 160, .after = 379)
+```
+
+```{r}
+#Add post-2014 data for Russia
+NW <- add_row(NW, country = "Russia", Code = "RUS", year = 2015, arsenal = 4500, .after = 450)
+
+NW <- add_row(NW, country = "Russia", Code = "RUS", year = 2016, arsenal = 4500, .after =451)
+
+NW <- add_row(NW, country = "Russia", Code = "RUS", year = 2017, arsenal = 4300, .after = 452)
+
+NW <- add_row(NW, country = "Russia", Code = "RUS", year = 2018, arsenal = 4350, .after = 453)
+
+NW <- add_row(NW, country = "Russia", Code = "RUS", year = 2019, arsenal = 4490, .after = 454)
+
+NW <- add_row(NW, country = "Russia", Code = "RUS", year = 2020, arsenal = 4310, .after = 455)
+```
+
+```{r}
+#Add post-2014 data for United Kingdom
+NW <- add_row(NW, country = "United Kingdom", Code = "UKG", year = 2015, arsenal = NA, .after = 526)
+
+NW <- add_row(NW, country = "United Kingdom", Code = "UKG", year = 2016, arsenal = NA, .after =527)
+
+NW <- add_row(NW, country = "United Kingdom", Code = "UKG", year = 2017, arsenal = NA, .after = 528)
+
+NW <- add_row(NW, country = "United Kingdom", Code = "UKG", year = 2018, arsenal = NA, .after = 529)
+
+NW <- add_row(NW, country = "United Kingdom", Code = "UKG", year = 2019, arsenal = NA, .after = 530)
+
+NW <- add_row(NW, country = "United Kingdom", Code = "UKG", year = 2020, arsenal = 195, .after = 531)
+```
+
+```{r}
+#Add post-2014 data for United States
+NW <- add_row(NW, country = "United States", Code = "USA", year = 2015, arsenal = 4760, .after = 602)
+
+NW <- add_row(NW, country = "United States", Code = "USA", year = 2016, arsenal = 4670, .after =603)
+
+NW <- add_row(NW, country = "United States", Code = "USA", year = 2017, arsenal = 4480, .after = 604)
+
+NW <- add_row(NW, country = "United States", Code = "USA", year = 2018, arsenal = 4000, .after = 605)
+
+NW <- add_row(NW, country = "United States", Code = "USA", year = 2019, arsenal = 3800, .after = 606)
+
+NW <- add_row(NW, country = "United States", Code = "USA", year = 2020, arsenal = 3800, .after = 607)
+```
+
+```{r}
+#add North Korea Data to both datasets
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 1945:2005, arsenal = 0, .after = 608)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2006, arsenal = NA, .after = 669)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2007, arsenal = NA, .after = 670)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2008, arsenal = NA, .after = 671)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2009, arsenal = NA, .after = 672)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2010, arsenal = NA, .after = 673)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2011, arsenal = NA, .after = 674)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2012, arsenal = NA, .after = 675)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2013, arsenal = NA, .after = 676)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2014, arsenal = NA, .after = 677)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2015, arsenal = NA, .after = 678)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2016, arsenal = NA, .after = 679)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2017, arsenal = NA, .after = 680)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2018, arsenal = 15, .after = 681)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2019, arsenal = NA, .after = 682)
+
+NW <- add_row(NW, country = "North Korea", Code = "PRK", year = 2020, arsenal = 35, .after = 683)
+
+```
+
+
+```{r}
+merged <- NMC %>% 
+  left_join(NW, by = c("stateabb" = "Code", "year" = "year"))
+#left join NW dataframe to NMC dataframe
+
+merged <- merged %>% 
+  left_join(NWT, by = c("stateabb" = "Code", "year" = "year"))
+#left join NWT dataframe to NMC dataframe
+
+write.csv(merged, "National Material Capabilities and Nuclear Weapons Dataset.csv")
+```
+
+```{r}
+#create a line plot of global nuclear arsenals since 1945
+
+plot1 <- ggplot(data = NW, aes(x = year, y = arsenal, by = country, color = country)) +
+  geom_line() +
+  labs(title="Global Nuclear Arsenals Since 1945", x = "Year", y ="Number of Nuclear Weapons") +
+  theme(axis.title.y = element_text (size = 7)) +
+  theme(axis.title.x = element_text (size = 7)) +
+  theme(plot.title = element_text (size = 8)) +
+  theme(axis.text.x = element_text (size = 7)) +
+  theme(legend.key.size = unit(.8, "line")) +
+  theme(axis.text.y = element_text (size = 5)) +
+  theme(legend.text = element_text(size = 5)) +
+  theme(legend.title = element_text(size =7))
+
+pdf(file = "Global Nuclear Arsenals Since 1945.pdf", width = , height = )
+plot(plot1)
+dev.off()
+
+```
+
+```{r}
+NW_2020 <- NW %>% 
+  filter(year == 2020) %>% 
+  summarise(country = country, arsenal = arsenal) %>% 
+  arrange(arsenal) %>% 
+  head(9)
+  
+#create new dataframe arranged by country with most nuclear weapons
+  
+```
+
+```{r}
+#create a bar plot of nuclear weapons by country for 2020
+plot2 <- ggplot(data = NW_2020, aes(x = reorder(country, arsenal), y =  arsenal, fill = country)) +
+         geom_col(stat = "count") + 
+  labs(title="Nuclear Arsenal by Country, 2020", y ="Number of Nuclear Weapons", x = "Country") +
+  theme(axis.title.y = element_text (size = 7))+
+  theme(plot.title = element_text (size = 8)) +
+  theme(axis.text.x = element_text (size = 6, angle = 40, vjust = 1, hjust =1))  +
+  theme(axis.title.x = element_text (size = 7)) +
+  theme(legend.key.size = unit(.8, "line")) +
+  theme(axis.text.y = element_text (size = 5)) +
+  theme(legend.text = element_text(size = 5)) +
+  theme(legend.title = element_text(size =7))
+
+pdf(file = "Nuclear Arsenal by Country, 2020.pdf", width = , height = )
+plot(plot2)
+dev.off()
+
+```
+
+
+
+
+
+
+
+
+
+
+
